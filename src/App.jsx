@@ -10,21 +10,24 @@ function App() {
   const [forecast, setForecast] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('owm_api_key') || '');
+  const [showKey, setShowKey] = useState(false);
 
-  // Using a placeholder API key - in a real app this would be an env variable
-  const API_KEY = 'YOUR_API_KEY_HERE';
+  useEffect(() => {
+    localStorage.setItem('owm_api_key', apiKey);
+  }, [apiKey]);
 
   const handleSearch = async (city) => {
-    if (API_KEY === 'YOUR_API_KEY_HERE') {
-      setError('Please provide a valid OpenWeatherMap API key in App.jsx');
+    if (!apiKey) {
+      setError('Please enter an OpenWeatherMap API key to continue.');
       return;
     }
 
     setLoading(true);
     setError(null);
     try {
-      const weatherData = await fetchCurrentWeather(city, API_KEY);
-      const forecastData = await fetchForecast(city, API_KEY);
+      const weatherData = await fetchCurrentWeather(city, apiKey);
+      const forecastData = await fetchForecast(city, apiKey);
       setWeather(weatherData);
       setForecast(forecastData);
     } catch (err) {
@@ -51,19 +54,60 @@ function App() {
           </p>
         </header>
 
-        <SearchBar onSearch={handleSearch} />
+        <div className="mb-8 flex flex-col items-center gap-4">
+          <div className="w-full max-w-md relative group">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-20 group-focus-within:opacity-40 transition duration-500"></div>
+            <div className="relative glass p-1 rounded-xl flex items-center gap-2">
+              <div className="pl-3 text-white/40">
+                <AlertCircle size={18} />
+              </div>
+              <input
+                type={showKey ? "text" : "password"}
+                placeholder="Enter OpenWeatherMap API Key..."
+                className="bg-transparent border-none focus:ring-0 text-white text-sm w-full py-2"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+              />
+              <button
+                onClick={() => setShowKey(!showKey)}
+                className="pr-3 text-white/40 hover:text-white/70 transition-colors"
+                type="button"
+              >
+                {showKey ? "Hide" : "Show"}
+              </button>
+            </div>
+          </div>
+          <SearchBar onSearch={handleSearch} />
+        </div>
 
         {loading && (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <Loader2 className="text-purple-500 animate-spin" size={48} />
-            <p className="text-white/50 animate-pulse">Fetching atmospheric data...</p>
+          <div className="flex flex-col items-center justify-center py-24 gap-6 animate-in fade-in duration-500">
+            <div className="relative">
+              <div className="absolute inset-0 bg-purple-500/30 blur-3xl rounded-full scale-150 animate-pulse"></div>
+              <div className="relative bg-[#1e1b4b]/80 p-8 rounded-3xl border border-white/10 glass shadow-2xl">
+                <Loader2 className="text-purple-400 animate-spin" size={48} />
+              </div>
+            </div>
+            <div className="space-y-2 text-center">
+              <p className="text-white font-medium tracking-widest uppercase text-xs opacity-50">Synchronizing</p>
+              <p className="text-white/90 text-xl font-light tracking-wide">Fetching atmospheric data...</p>
+            </div>
           </div>
         )}
 
         {error && (
-          <div className="max-w-md mx-auto bg-red-500/10 border border-red-500/20 rounded-2xl p-6 flex items-center gap-4 text-red-400 mb-8">
-            <AlertCircle size={24} />
-            <p>{error}</p>
+          <div className="max-w-xl mx-auto mb-12 overflow-hidden rounded-2xl border border-red-500/50 bg-red-950/30 backdrop-blur-md shadow-[0_0_40px_-10px_rgba(239,68,68,0.3)]">
+            <div className="flex items-stretch">
+              <div className="bg-red-500 px-6 flex items-center justify-center">
+                <AlertCircle size={32} className="text-white" />
+              </div>
+              <div className="p-6">
+                <h3 className="text-red-400 font-bold text-lg mb-1">Weather Service Error</h3>
+                <p className="text-red-100/80 leading-relaxed">
+                  {error}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 

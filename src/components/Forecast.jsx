@@ -8,7 +8,10 @@ const Forecast = ({ data }) => {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <h2 className="text-2xl font-semibold text-white mb-6 pl-4 border-l-4 border-purple-500">5-Day Forecast</h2>
+      <div className="flex items-center gap-4 mb-8">
+        <h2 className="text-2xl font-bold text-white tracking-tight">5-Day Forecast</h2>
+        <div className="flex-1 h-px bg-gradient-to-r from-purple-500/50 to-transparent"></div>
+      </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
         {dailyForecast.map((day, index) => {
           const date = new Date(day.dt * 1000);

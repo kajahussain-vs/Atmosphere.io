@@ -15,12 +15,18 @@ const CurrentWeather = ({ data }) => {
             <MapPin size={18} />
             <span className="tracking-wide uppercase text-sm">{name}, {sys.country}</span>
           </div>
-          <h1 className="text-6xl md:text-8xl font-bold mb-2 tracking-tighter">
+          <h1 className="text-7xl md:text-9xl font-extrabold mb-2 tracking-tighter bg-gradient-to-b from-white to-white/50 bg-clip-text text-transparent">
             {Math.round(main.temp)}°
           </h1>
-          <p className="text-xl md:text-2xl text-white/70 capitalize font-light">
-            {weather[0].description}
-          </p>
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+            <p className="text-xl md:text-2xl text-white/80 capitalize font-medium">
+              {weather[0].description}
+            </p>
+            <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-white/20"></div>
+            <p className="text-xl md:text-2xl text-white/50 font-light">
+              H: {Math.round(main.temp_max)}° L: {Math.round(main.temp_min)}°
+            </p>
+          </div>
         </div>
 
         <div className="relative group">
